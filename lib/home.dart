@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:ebooks/helper/setting.dart';
+import 'package:ebooks/helper/data.dart';
 import 'package:ebooks/list_chapter.dart';
 import 'package:ebooks/list_search.dart';
 import 'package:ebooks/helper/transition.dart';
@@ -20,9 +20,6 @@ import 'helper/model.dart';
 import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
-  final String data;
-  const Home({Key? key, required this.data}) : super(key: key);
-
   _Home createState() => _Home();
 }
 
@@ -386,206 +383,71 @@ class _Home extends State<Home> {
 
   //============================ Body Code ===================================//
 
-  Future<Base> secondConfigure() async {
-    final response = await http.get(Uri.parse(widget.data));
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      return Base.fromJson(jsonData);
-    } else {
-      throw secondConfigure();
-    }
-  }
-
   body() {
     return Container(
       margin: EdgeInsets.fromLTRB(15, 5, 15, 15),
       color: ColorsRes.white,
-      child: FutureBuilder<Base>(
-        future: secondConfigure(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            Base? base = snapshot.data;
-            List<ListHome> _list = List.from(base!.listed);
-
-            if (Setting.opsi_ad != 0) {
-              switch (Setting.opsi_ad) {
-                case 1:
-                  Setting.createInterstitialAdmob();
-                  break;
-
-                default:
-              }
-              for (int i = 0; i < base.listed.length; i++) {
-                if((i + 1) % 5 == 3 && i != 0) {
-                  _list..insert(i, base.listed[i]);
-                }
-              }
-            }
-
-            return StaggeredGridView.countBuilder(
-                crossAxisCount: 2,
-                physics: BouncingScrollPhysics(),
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                itemCount: _list.length,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                itemBuilder: (context, index) {
-                  if (Setting.opsi_ad != 0) {
-                    return ((index + 1) % 5 != 3 || index == 0)
-                        ? Padding(
-                      padding: EdgeInsets.only(left: 5, right: 5),
-                      child: GestureDetector(
-                        onTap: () async {
-                          switch (Setting.opsi_ad) {
-                            case 1:
-                              Setting.showInterstitial();
-                              break;
-                              
-                            default:
-                          }
-
-                          Navigator.push(
-                            context,
-                            SlideLeftRoute(page: ChapterPage(
-                              name_book: _list[index].name_book,
-                              list: _list[index].list,
-                            )),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(25),
-                                bottomLeft: Radius.circular(25),
-                              )
-                          ),
-                          elevation: 2,
-                          child: Container(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(25),
-                                bottomLeft: Radius.circular(25),
-                              ),
-                              image: DecorationImage(
-                                  image: AssetImage("assets/image/container_box.png"),
-                                  fit: BoxFit.fill
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                _list[index].name_book,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: ColorsRes.appColor,
-                                    fontSize: 18,
-                                    height: 1.0
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+      child: StaggeredGridView.countBuilder(
+        crossAxisCount: 2,
+        physics: BouncingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        itemCount: Datas.data.length,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.only(left: 5, right: 5),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  SlideLeftRoute(
+                    page: ChapterPage(
+                      name_book: Datas.data[index].name_book,
+                      list: Datas.data[index].list,
+                    ),
+                  ),
+                );
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(25),
+                    bottomLeft: Radius.circular(25),
+                  ),
+                ),
+                elevation: 2,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(25),
+                      bottomLeft: Radius.circular(25),
+                    ),
+                    image: DecorationImage(
+                        image: AssetImage("assets/image/container_box.png"),
+                        fit: BoxFit.fill
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      Datas.data[index].name_book,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: ColorsRes.appColor,
+                          fontSize: 18,
+                          height: 1.0
                       ),
-                    )
-                        : Container(
-                      child: (() {
-                        switch (Setting.opsi_ad) {
-                          case 1:
-                            return Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(25),
-                                    bottomLeft: Radius.circular(25),
-                                  ),
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage("assets/image/container_box.png"),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                  child: Setting.createNativeAdmob(),
-                                ),
-                              ),
-                            );
-
-                          default:
-                            return Container();
-                        }
-                      } ())
-                    );
-                  }
-
-                  else {
-                    return Padding(
-                      padding: EdgeInsets.only(left: 5, right: 5),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            SlideLeftRoute(page: ChapterPage(
-                              name_book: _list[index].name_book,
-                              list: _list[index].list,
-                            )),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(25),
-                                bottomLeft: Radius.circular(25),
-                              )
-                          ),
-                          elevation: 2,
-                          child: Container(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(25),
-                                bottomLeft: Radius.circular(25),
-                              ),
-                              image: DecorationImage(
-                                  image: AssetImage("assets/image/container_box.png"),
-                                  fit: BoxFit.fill
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                _list[index].name_book,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: ColorsRes.appColor,
-                                    fontSize: 18,
-                                    height: 1.0
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
-
-                staggeredTileBuilder: (index) {
-                  if (Setting.opsi_ad != 0) {
-                    return ((index + 1) % 5 != 3 || index == 0)
-                        ? StaggeredTile.count(1, 1)
-                        : StaggeredTile.count(2, 1.5);
-                  } else {
-                    return StaggeredTile.count(1, 1);
-                  }
-                }
-            );
-          }
-
-          return Center(
-            child: Text('loading...'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           );
+        },
+
+        staggeredTileBuilder: (index) {
+          return StaggeredTile.count(1, 1);
         },
       ),
     );

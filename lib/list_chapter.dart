@@ -1,6 +1,5 @@
 import 'package:ebooks/detail_chapter.dart';
 import 'package:ebooks/helper/colors_res.dart';
-import 'package:ebooks/helper/setting.dart';
 import 'package:ebooks/helper/transition.dart';
 import 'package:ebooks/helper/model.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,15 +30,17 @@ class _ChapterPage extends State<ChapterPage> {
             color: ColorsRes.white,
           ),
 
-          Column(
-            children: [
-              SizedBox(
-                height: 25,
-              ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 25,
+                ),
 
-              appBar(height, width),
-              body(height, width),
-            ],
+                appBar(height, width),
+                body(height, width),
+              ],
+            ),
           ),
         ],
       ),
@@ -60,31 +61,18 @@ class _ChapterPage extends State<ChapterPage> {
       ),
       child: Container(
         width: width,
-        height: height * 0.625,
         padding: EdgeInsets.only(top: 15),
-        child: ListView.separated(
-          physics: BouncingScrollPhysics(),
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           padding: EdgeInsets.all(5),
           itemCount: widget.list.length,
           itemBuilder: (context, index) {
             return GestureDetector(
                 onTap: () {
-                  switch (Setting.opsi_ad) {
-                    case 1:
-                      Setting.showInterstitial();
-                      break;
-
-                    case 2:
-                      Setting.showInterstitial();
-                      break;
-
-                    default:
-                  }
-
-                  Navigator.push(
+                 Navigator.push(
                       context,
-                      SizeRoute(page: DetailChapter(
+                      SlideUp(page: DetailChapter(
                         name_book: widget.name_book,
                         list: widget.list,
                         index: index,
@@ -134,28 +122,6 @@ class _ChapterPage extends State<ChapterPage> {
                 )
             );
           },
-
-          separatorBuilder: (context, index) {
-            switch (Setting.opsi_ad) {
-              case 1:
-                return ((index + 1) % Setting.nativeInterval == 0)
-                    ? Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25))
-                  ),
-                  child: Container(
-                    height: height * 0.3,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Setting.createNativeAdmob(),
-                    ),
-                  ),
-                ) : Container();
-
-              default:
-                return Container();
-            }
-          },
         )
       )
     );
@@ -182,7 +148,6 @@ class _ChapterPage extends State<ChapterPage> {
                   icon: Icon(Icons.arrow_back_ios_rounded),
                   color: ColorsRes.appColor,
                   onPressed: () {
-                    Setting.showInterstitial();
                     Navigator.pop(context);
                   },
                 ),

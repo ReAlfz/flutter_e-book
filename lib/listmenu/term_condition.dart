@@ -1,7 +1,5 @@
-import 'package:ebooks/helper/setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class Terms_Condition extends StatefulWidget {
   @override
@@ -17,14 +15,7 @@ class _Terms_Condition extends State<Terms_Condition> {
         title: Text('Terms & Conditions'),
       ),
 
-      body: WebView(
-        initialUrl: Setting.html_condition,
-        onProgress: (int process) {
-          Center(
-            child: Text('Loading...'),
-          );
-        },
-      ),
+      body: Container()
     );
   }
 }

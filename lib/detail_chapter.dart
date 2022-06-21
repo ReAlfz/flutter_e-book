@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'helper/colors_res.dart';
-import 'helper/setting.dart';
 import 'list_search.dart';
 import 'helper/model.dart';
 
@@ -34,16 +33,18 @@ class _DetailChapter extends State<DetailChapter> {
             color: Colors.white,
           ),
 
-          Column(
-            children: [
-              SizedBox(
-                height: 25,
-              ),
-              appBar(height, width),
-              nextAndPrevious(height, width),
-              body(height, width),
-            ],
-          )
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 25,
+                ),
+                appBar(height, width),
+                nextAndPrevious(height, width),
+                body(height, width),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -62,7 +63,7 @@ class _DetailChapter extends State<DetailChapter> {
                   ? () {
                 Navigator.pushReplacement(
                     context,
-                    SizeRoute(page: DetailChapter(
+                    SlideUp(page: DetailChapter(
                         name_book: widget.name_book,
                         list: widget.list,
                         index: widget.index - 1
@@ -87,7 +88,7 @@ class _DetailChapter extends State<DetailChapter> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Icon(
-                          Icons.arrow_back_ios_rounded,
+                          Icons.arrow_back_ios_new_rounded,
                           size: 17,
                           color: (widget.index != 0)
                               ? ColorsRes.textcolor : ColorsRes.black.withOpacity(0.3),
@@ -114,10 +115,9 @@ class _DetailChapter extends State<DetailChapter> {
             GestureDetector(
               onTap: (widget.index != widget.list.length - 1)
                   ? () {
-                Setting.showInterstitial();
                 Navigator.pushReplacement(
                     context,
-                    SizeRoute(page: DetailChapter(
+                    SlideUp(page: DetailChapter(
                         name_book: widget.name_book,
                         list: widget.list,
                         index: widget.index + 1
@@ -218,10 +218,12 @@ class _DetailChapter extends State<DetailChapter> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back_ios_rounded),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 40,
+                  ),
                   color: ColorsRes.appColor,
                   onPressed: () {
-                    Setting.showInterstitial();
                     Navigator.pop(context);
                   },
                 ),
